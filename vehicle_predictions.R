@@ -1,0 +1,146 @@
+##################
+# GAMS to explain and predict missing data
+# 
+############
+# libraries
+library(mgcv)
+library(ggplot2)
+# library(zoo) #rolling mean
+library(tidyr) # long >wide
+# library(dplyr)
+
+##########
+# import 
+long_traffic = read.csv("output/vehicle_avg_per_hour_cleaned.csv", header = TRUE)
+long_traffic$datetime_EST = as.POSIXct(long_traffic$datetime_EST, tz = "EST")
+long_traffic$date = as.Date(long_traffic$date)
+long_traffic$phase = factor(long_traffic$phase, levels = c('red', 'yellow','green'))
+
+camera_data = read.csv("data/camera_IDs_locations.csv", header = TRUE)
+camera_data$camera_name = gsub(".jpg","",camera_data$ID)
+camera_data_trun = camera_data[,c('camera_name','road_connect','lanes')]
+
+long_traffic_full = merge(long_traffic, camera_data_trun, by.x = 'camera_name', by.y = 'camera_name')
+
+################
+# GAMS
+
+gam_mod1 <- gam(vehicle_avg ~ camera_name + s(hour, bs = "cc"), data = long_traffic, family = 'poisson') 
+summary(gam_mod1)
+coef(gam_mod1)
+plot(gam_mod1, pages=1, cex = 0.5)
+exp(gam_mod1$family$getTheta())
+plot(gam_mod1, residuals = TRUE, pch = 1, pages=1)
+
+plot.gam(gam_mod1, pages=1)
+
+gam_mod1a <- gam(vehicle_avg ~ camera_name + s(hour, bs = "cc"), data = long_traffic_full, family = 'poisson') 
+summary(gam_mod1a)
+
+gam_mod2 <- gam(vehicle_avg ~ camera_name + weekends + s(hour, bs = "cc", by = camera_name), data = long_traffic) 
+summary(gam_mod2)
+
+gam_mod3 <- gam(vehicle_avg ~ camera_name + weekends + s(hour, by = camera_name) + s(date), data = long_traffic) 
+summary(gam_mod3)
+
+gam_mod4 <- gam(vehicle_avg ~ camera_name + weekends + road_connect*phase + s(hour, by = camera_name, bs = "cc"), data = long_traffic_full, family = 'poisson') 
+summary(gam_mod4)
+gam.check(gam_mod4)
+par(mfrow=c(5,4))
+plot(gam_mod4,shade=TRUE,seWithMean=TRUE,scale=0, ylim = c(-8,4), xlim = c(0,24))
+
+gam_mod5 <- gam(vehicle_avg ~ camera_name + weekends + phase + s(hour, by = camera_name, bs = "cc"), data = long_traffic_full, family = 'poisson') 
+summary(gam_mod4)
+gam.check(gam_mod4)
+par(mfrow=c(5,4))
+plot(gam_mod4,shade=TRUE,seWithMean=TRUE,scale=0, ylim = c(-8,4), xlim = c(0,24))
+
+gam_mod1_ml <- gam(vehicle_avg ~ camera_name + s(hour, bs = "cc"), data = long_traffic, 
+                family = 'poisson',  method = "ML") 
+summary(gam_mod1_ml)
+
+gam_mod4_ml <- gam(vehicle_avg ~ camera_name + weekends + phase + s(hour, by = camera_name), 
+                data = long_traffic, family = 'poisson', method = "ML") 
+summary(gam_mod4_ml)
+gam.check(gam_mod4)
+par(mfrow=c(1,2))
+plot(gam_mod4,shade=TRUE,seWithMean=TRUE,scale=0)
+
+######## 
+#create dataset of missing data
+long_traffic_trun = long_traffic[, c('datetime_EST', 'camera_name', 'vehicle_avg')]
+wide_traffic_trun <- spread(long_traffic_trun, camera_name, vehicle_avg)
+traffic_trun_missing <- gather(wide_traffic_trun, camera_name, vehicle_avg, CAM02001CCTV2:parkArboretum, factor_key=TRUE)
+traffic_trun_missing = traffic_trun_missing[is.na(traffic_trun_missing$vehicle_avg),]
+long_traffic$datetime_EST = as.POSIXct(long_traffic$datetime_EST, tz = "EST")
+traffic_trun_missing$date = as.Date(traffic_trun_missing$datetime_EST, format="%y-%m-%d")
+traffic_trun_missing$hour = format(traffic_trun_missing$datetime_EST, format='%H')
+traffic_trun_missing$hour = as.numeric(traffic_trun_missing$hour)
+traffic_trun_missing$phase = cut(traffic_trun_missing$date,breaks = c(as.Date('2020-03-28'),as.Date('2020-05-08'),# policy red from 4/27 to 5/7
+                                                      as.Date('2020-05-29'),#  yellow 5/8 to 5/28
+                                                      as.Date('2020-07-08')), #  green 5/29 to 6/29
+                         labels=c("red","yellow","green"))
+traffic_trun_missing$weekdays = weekdays(traffic_trun_missing$datetime_EST)
+traffic_trun_missing$weekends = traffic_trun_missing$weekdays %in% c("Sunday", "Saturday")
+traffic_trun_missing = merge(traffic_trun_missing, camera_data_trun)
+traffic_trun_missing
+
+gam4_predict <- as.data.frame(predict(gam_mod4, traffic_trun_missing, type = "response", se.fit = TRUE))
+gam4_predict_data = cbind(traffic_trun_missing,gam4_predict)
+head(gam4_predict_data)
+ggplot(gam4_predict_data, aes(x = hour, y = fit, group = camera_name)) +
+  geom_point(aes(color=camera_name))+
+  #geom_line(aes(hour, fit))+
+  facet_wrap(~phase, ncol = 1)+
+  theme_classic()
+
+#combine fitted and observed data 
+gam4_predict_data$obs_type = 'predicted'
+gam4_predict_data$vehicle_avg <- NULL
+gam4_predict_data$vehicle_avg <- gam4_predict_data$fit
+names(gam4_predict_data)
+long_traffic2 = long_traffic[,c('camera_name','datetime_EST', 'vehicle_avg')]
+long_traffic2$obs_type = 'observed'
+head(long_traffic)
+head(gam4_predict_data)
+gam4_predict_data2 = gam4_predict_data[,c('camera_name','datetime_EST', 'obs_type','vehicle_avg')]
+
+complete_vehicle = dplyr::bind_rows(long_traffic2,gam4_predict_data2)
+names(complete_vehicle)
+
+complete_vehicle = merge(complete_vehicle, camera_data_trun, by.x = 'camera_name', by.y = 'camera_name')
+
+complete_vehicle$date = as.Date(complete_vehicle$datetime_EST, format="%y-%m-%d")
+complete_vehicle$hour = format(complete_vehicle$datetime_EST, format='%H')
+complete_vehicle$hour = as.numeric(complete_vehicle$hour)
+complete_vehicle$phase = cut(complete_vehicle$date,breaks = c(as.Date('2020-03-28'),as.Date('2020-05-08'),# policy red from 4/27 to 5/7
+                                                      as.Date('2020-05-29'),#  yellow 5/8 to 5/28
+                                                      as.Date('2020-07-04')), #  green 5/29 to 6/29
+                         labels=c("red","yellow","green"))
+# complete_vehicle$weekdays = weekdays(complete_vehicle$datetime_EST) # doesn't seem 
+# complete_vehicle$weekends = complete_vehicle$weekdays %in% c("Sunday", "Saturday")
+complete_vehicle$weekdays = weekdays(complete_vehicle$date)
+weekdays = unique(complete_vehicle$weekdays)[order(unique(complete_vehicle$weekdays))]
+weekend_days = weekdays[c(3,4)]
+complete_vehicle$weekends = complete_vehicle$weekdays %in% weekend_days
+head(complete_vehicle)
+write.csv(complete_vehicle,"output/predicted_observed_camera_data_20200810.csv", row.names = FALSE)
+
+
+##############
+# hourly predictions for red vs green
+#dummy dataset for hourly datasets 
+dummy_dat <- data.frame(camera_name=rep(camera_data_trun$camera_name,24),
+                        hour=rep(seq(0,23,by=1),each = 19)) 
+dummy_dat$phase = 'green'
+dummy_dat2 <- data.frame(camera_name=rep(camera_data_trun$camera_name,24),
+                         hour=rep(seq(0,23,by=1),each = 19)) 
+dummy_dat2$phase = 'red'
+dummy_dat = rbind(dummy_dat, dummy_dat2)
+dummy_dat$weekends = FALSE
+dummy_dat_merged = merge(dummy_dat, camera_data_trun)
+dummy_dat_predict <- as.data.frame(predict(gam_mod4, dummy_dat_merged, type = "response", se.fit = TRUE))
+dummy_dat_predict_full = cbind(dummy_dat_merged, dummy_dat_predict)
+
+write.csv(dummy_dat_predict_full, "output/gam4_predicted_hourly_green_red.csv", row.names = FALSE)
+
