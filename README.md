@@ -13,18 +13,18 @@ Data are all from open access sources:
 Code in this repository provides details on workflow for processing raw data and analyzing time series of different data sets:
 Traffic analyses:
   **[filename]**: classification of traffic camera stills
-  *vehicle_cleaning.R*: cleaning of hourly count data for traffic cameras - namely removing frozen image counts.
-  *vehicle_predictions.R*: fitting GAMs to observed data and using to predict missing counts.
-  *vehicle_viz.R*: vizualizations for vehicle data; plots for main text and SI
+  **vehicle_cleaning.R**: cleaning of hourly count data for traffic cameras - namely removing frozen image counts.
+  **vehicle_predictions.R**: fitting GAMs to observed data and using to predict missing counts.
+  **vehicle_viz.R**: vizualizations for vehicle data; plots for main text and SI
 SafeGraph analyses:
-  *[filename]*: identifying and truncating dataset for Centre County
-  *safegraph_cleaning.R*: adjusting mobile phone counts to match policy 'weeks' (Friday to Thursday) and normalization
-  *safegraph_analysis.R*: time series analysis of three years data
+  **[filename]**: identifying and truncating dataset for Centre County
+  **safegraph_cleaning.R**: adjusting mobile phone counts to match policy 'weeks' (Friday to Thursday) and normalization
+  **safegraph_analysis.R**: time series analysis of three years data
 Radiance analyses:
-  *[filename]*: processing of H5D5 files to GeoTiffs
-  *radiance_cleaning.R*: cropping and removing full moon days
-  *radiance_analysis.R*: daily summaries and summaries for each phase and year 
+  **[filename]**: processing of H5D5 files to GeoTiffs
+  **radiance_cleaning.R**: cropping and removing full moon days
+  **radiance_analysis.R**: daily summaries and summaries for each phase and year 
 COVID-19 case analyses:
-  *covid19_cleaning.R*: truncating data to counties of interest and time period
-  *covid19_analysis.R*: visualizing epidemic curves for region and analysis for cross-correlation with movement data
+  **covid19_cleaning.R**: truncating data to counties of interest and time period
+  **covid19_analysis.R**: visualizing epidemic curves for region and analysis for cross-correlation with movement data
   
