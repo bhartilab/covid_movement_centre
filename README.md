@@ -12,8 +12,8 @@ Data are all from open access sources:
   
 Code in this repository provides details on workflow for processing raw data and analyzing time series of different data sets:
 Traffic analyses:
-  *[filename]*: classification of traffic camera stills
- *vehicle_cleaning.R*: cleaning of hourly count data for traffic cameras - namely removing frozen image counts.
+  **[filename]**: classification of traffic camera stills
+  *vehicle_cleaning.R*: cleaning of hourly count data for traffic cameras - namely removing frozen image counts.
   *vehicle_predictions.R*: fitting GAMs to observed data and using to predict missing counts.
   *vehicle_viz.R*: vizualizations for vehicle data; plots for main text and SI
 SafeGraph analyses:
