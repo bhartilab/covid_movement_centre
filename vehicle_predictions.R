@@ -1,13 +1,11 @@
 ##################
-# GAMS to explain and predict missing data
-# 
+# GAMS to predict missing data
+
 ############
 # libraries
 library(mgcv)
 library(ggplot2)
-# library(zoo) #rolling mean
-library(tidyr) # long >wide
-# library(dplyr)
+library(tidyr) 
 
 ##########
 # import 
@@ -16,20 +14,19 @@ long_traffic$datetime_EST = as.POSIXct(long_traffic$datetime_EST, tz = "EST")
 long_traffic$date = as.Date(long_traffic$date)
 long_traffic$phase = as.factor(long_traffic$phase)
 long_traffic$phase = factor(long_traffic$phase, levels = c('red', 'yellow','green'))
+long_traffic$camera_name = as.factor(long_traffic$camera_name)
 
+long_traffic$vehicle_avg_round = round(long_traffic$vehicle_avg)
 ################
 # GAMS
 
-gam_mod1 <- gam(vehicle_avg ~ camera_name + s(hour, bs = "cc"), data = long_traffic, family = 'poisson') 
+gam_mod1 <- gam(vehicle_avg_round ~ camera_name + s(hour, bs = "cc"), data = long_traffic, family = 'poisson') 
 summary(gam_mod1)
 coef(gam_mod1)
 plot(gam_mod1, pages=1, cex = 0.5)
-exp(gam_mod1$family$getTheta())
 plot(gam_mod1, residuals = TRUE, pch = 1, pages=1)
 
-plot.gam(gam_mod1, pages=1)
-
-gam_mod1a <- gam(vehicle_avg ~ camera_name + s(hour, bs = "cc"), data = long_traffic_full, family = 'poisson') 
+gam_mod1a <- gam(vehicle_avg_round ~ camera_name + s(hour, bs = "cc"), data = long_traffic, family = 'poisson') 
 summary(gam_mod1a)
 
 gam_mod2 <- gam(vehicle_avg ~ camera_name + weekends + s(hour, bs = "cc", by = camera_name), data = long_traffic) 
@@ -38,43 +35,27 @@ summary(gam_mod2)
 gam_mod3 <- gam(vehicle_avg ~ camera_name + weekends + s(hour, by = camera_name) + s(date), data = long_traffic) 
 summary(gam_mod3)
 
-gam_mod4 <- gam(vehicle_avg ~ camera_name + weekends + road_connect*phase + s(hour, by = camera_name, bs = "cc"), data = long_traffic_full, family = 'poisson') 
+
+gam_mod4 <- gam(vehicle_avg_round ~ camera_name + weekends + road_connect*phase + s(hour, by = camera_name, bs = "cc"), data = long_traffic, family = 'poisson') 
 summary(gam_mod4)
 gam.check(gam_mod4)
 par(mfrow=c(5,4))
 plot(gam_mod4,shade=TRUE,seWithMean=TRUE,scale=0, ylim = c(-8,4), xlim = c(0,24))
-
-gam_mod5 <- gam(vehicle_avg ~ camera_name + weekends + phase + s(hour, by = camera_name, bs = "cc"), data = long_traffic_full, family = 'poisson') 
-summary(gam_mod4)
-gam.check(gam_mod4)
-par(mfrow=c(5,4))
-plot(gam_mod4,shade=TRUE,seWithMean=TRUE,scale=0, ylim = c(-8,4), xlim = c(0,24))
-
-gam_mod1_ml <- gam(vehicle_avg ~ camera_name + s(hour, bs = "cc"), data = long_traffic, 
-                family = 'poisson',  method = "ML") 
-summary(gam_mod1_ml)
-
-gam_mod4_ml <- gam(vehicle_avg ~ camera_name + weekends + phase + s(hour, by = camera_name), 
-                data = long_traffic, family = 'poisson', method = "ML") 
-summary(gam_mod4_ml)
-gam.check(gam_mod4)
-par(mfrow=c(1,2))
-plot(gam_mod4,shade=TRUE,seWithMean=TRUE,scale=0)
 
 ######## 
-#create dataset of missing data
+# identify missing hours
 long_traffic_trun = long_traffic[, c('datetime_EST', 'camera_name', 'vehicle_avg')]
-wide_traffic_trun <- spread(long_traffic_trun, camera_name, vehicle_avg)
-traffic_trun_missing <- gather(wide_traffic_trun, camera_name, vehicle_avg, CAM02001CCTV2:parkArboretum, factor_key=TRUE)
+wide_traffic_trun = spread(long_traffic_trun, camera_name, vehicle_avg)
+traffic_trun_missing = gather(wide_traffic_trun, camera_name, vehicle_avg, CAM02001CCTV2:parkArboretum, factor_key=TRUE)
 traffic_trun_missing = traffic_trun_missing[is.na(traffic_trun_missing$vehicle_avg),]
-long_traffic$datetime_EST = as.POSIXct(long_traffic$datetime_EST, tz = "EST")
+
+traffic_trun_missing$datetime_EST = as.POSIXct(traffic_trun_missing$datetime_EST, tz = "EST")
 traffic_trun_missing$date = as.Date(traffic_trun_missing$datetime_EST, format="%y-%m-%d")
 traffic_trun_missing$hour = format(traffic_trun_missing$datetime_EST, format='%H')
 traffic_trun_missing$hour = as.numeric(traffic_trun_missing$hour)
-traffic_trun_missing$phase = cut(traffic_trun_missing$date,breaks = c(as.Date('2020-03-28'),as.Date('2020-05-08'),# policy red from 4/27 to 5/7
-                                                      as.Date('2020-05-29'),#  yellow 5/8 to 5/28
-                                                      as.Date('2020-07-08')), #  green 5/29 to 6/29
-                         labels=c("red","yellow","green"))
+traffic_trun_missing$phase = getphase(traffic_trun_missing$date)
+traffic_trun_missing$phase = factor(traffic_trun_missing$phase,
+                                    levels=c("red","yellow","green"))
 traffic_trun_missing$weekdays = weekdays(traffic_trun_missing$datetime_EST)
 traffic_trun_missing$weekends = traffic_trun_missing$weekdays %in% c("Sunday", "Saturday")
 traffic_trun_missing = merge(traffic_trun_missing, camera_data_trun)
