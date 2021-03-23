@@ -1,0 +1,20 @@
+index,ID,url,Description,status,Latitude,Longitude,,lanes,facing,angle,roads,road_connect,type
+1,CAM02001CCTV2.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02001CCTV2.jpg,Port Matilda US-322 By-Pass Westbound,changed 4/27,40.810961,-78.075259,"40.810961, -78.075259",5,east,100,major,between,
+2,CAM02002CCTV3.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02002CCTV3.jpg,Grays Woods,changed 5/3,40.817144,-77.939841,"40.817144, -77.939841",7,west,280,major,between,
+3,CAM02003CCTV4.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02003CCTV4.jpg,I-99/US-322 Interchange,changed 5/1,40.828613,-77.840339,"40.828613, -77.840339",6,NNE,30,major,between,
+4,CAM02005CCTV9.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02005CCTV9.jpg,Milesburg Interchange West I-80 Exit 158 Eastbound / Alt US-220,no change,40.955477,-77.773749,"40.955477, -77.773749",3,east,90,major,between,
+5,CAM02006CCTV10.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02006CCTV10.jpg,Milesburg Interchange East I-80 Exit 158 Westbound / PA-150,changed 4/27,40.956061,-77.766277,"40.956061, -77.766277",3,west,280,major,between,
+6,CAM02007CCTV13.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02007CCTV13.jpg,US-322 E/O PA-26,changed 5/4,40.795773,-77.820937,"40.795773, -77.820937",4,NNW,315,major,between,divided highway
+7,CAM02009CCTV7.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02009CCTV7.jpg,I-80 Eastbound Exit 161 Bellefonte Interchange (I-80 & I-99),no change,40.944571,-77.720918,"40.944571, -77.720918",2,west,250,major,between,
+8,CAM02010CCTV11.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02010CCTV11.jpg,Port Matilda I-99 Exit 61 Median,no change,40.80388,-78.063664,"40.80388, -78.063664",6,south,190,major,between,
+9,CAM02020CCTV24.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02020CCTV24.jpg,Benner Pike,"changed 5/6-5/7, then returned",40.829048,-77.804817,"40.829048, -77.804817",6,south,190,major,within,intersection
+10,CAM02028CCTV32.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02028CCTV32.jpg,Atherton and Valley Vista,no change,40.812073,-77.9225,"40.812073, -77.9225",6,North,0,major,between,
+11,CAM02033CCTV38.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02033CCTV38.jpg,Snowshoe I-80 Exit 147,no change,41.022703,-77.933981,"41.022703, -77.933981",4,east,80,major,between,
+12,CAM02037CCTV43.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02037CCTV43.jpg,Atherton and Vairo,no change,40.807936,-77.895204,"40.807936, -77.895204",5,west,280,minor,within,
+13,CAM02038CCTV44.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02038CCTV44.jpg,Atherton and North Hills,no change,40.805031,-77.886886,"40.805031, -77.886886",5,ESE,120,minor,within,
+14,CAM02039CCTV45.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02039CCTV45.jpg,Atherton and Park,no change,40.796522,-77.872549,"40.796522, -77.872549",5,WNW,280,minor,within,
+15,CAM02040CCTV46.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02040CCTV46.jpg,Atherton and W.College,changed 5/2,40.791787,-77.864971,"40.791787, -77.864971",4,NWN,290,minor,within,
+16,CAM02042CCTV49.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02042CCTV49.jpg,Atherton and W.Beaver,"changed 5/2-5/4, then returned",40.790894,-77.863812,"40.790894, -77.863812",4,SES,160,minor,within,
+17,CAM02046CCTV52.jpg,http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02046CCTV52.jpg,I-99 at Exit 71 (Toftrees),changed 5/5,40.817953,-77.900271,"40.817953, -77.900271",4,SE,130,major,between,divided highway
+18,collegeTwp.jpg,http://68.65.125.20/#view,College Township Traffic camera,no change,40.811564,-77.830719,"40.811564, -77.830719",4,WNW,290,major,between,road
+19,parkArboretum.jpg,https://arboretum-camera.vmhost.psu.edu/,PSU Park Ave.,no change,40.804483,-77.864219,"40.804483, -77.864219",3,east,90,minor,within,
