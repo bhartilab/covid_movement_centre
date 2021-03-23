@@ -7,9 +7,6 @@ library(zoo) #rolling mean
 library(tidyr) # long >wide
 library(dplyr)
 library(RColorBrewer)
-
-
-library(usmap)
 library(ggplot2)
 
 ####
@@ -18,9 +15,9 @@ hourly_predicted = read.csv("output/gam4_predicted_hourly_green_red.csv", header
 
 class(hourly_predicted$phase)
 hourly_predicted$phase <- factor(hourly_predicted$phase, levels = c("red", "green"))
-camera_loc = read.csv("data/camera_IDs_locations.csv", header = TRUE)
+camera_loc = read.csv("raw_data/camera_IDs_locations.csv", header = TRUE)
 camera_loc$road_connect
-complete_vehicle = read.csv("output/predicted_observed_camera_data_20200810.csv", header = TRUE)
+complete_vehicle = read.csv("output/predicted_observed_camera_data.csv", header = TRUE)
 complete_vehicle$date = as.Date(complete_vehicle$date)
 ########
 # maps
