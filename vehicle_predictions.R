@@ -14,13 +14,8 @@ library(tidyr) # long >wide
 long_traffic = read.csv("output/vehicle_avg_per_hour_cleaned.csv", header = TRUE)
 long_traffic$datetime_EST = as.POSIXct(long_traffic$datetime_EST, tz = "EST")
 long_traffic$date = as.Date(long_traffic$date)
+long_traffic$phase = as.factor(long_traffic$phase)
 long_traffic$phase = factor(long_traffic$phase, levels = c('red', 'yellow','green'))
-
-camera_data = read.csv("data/camera_IDs_locations.csv", header = TRUE)
-camera_data$camera_name = gsub(".jpg","",camera_data$ID)
-camera_data_trun = camera_data[,c('camera_name','road_connect','lanes')]
-
-long_traffic_full = merge(long_traffic, camera_data_trun, by.x = 'camera_name', by.y = 'camera_name')
 
 ################
 # GAMS
