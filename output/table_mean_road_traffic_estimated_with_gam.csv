@@ -1,0 +1,13 @@
+"road_connect","weekends","phase","daily_mean"
+"between",FALSE,"green",12425.391455284
+"between",FALSE,"red",7397.46440327592
+"between",FALSE,"yellow",9728.54521132376
+"between",TRUE,"green",8112.71295082148
+"between",TRUE,"red",6366.55293490165
+"between",TRUE,"yellow",6366.93941231827
+"within",FALSE,"green",15309.3162331267
+"within",FALSE,"red",10772.095251996
+"within",FALSE,"yellow",13267.4815198323
+"within",TRUE,"green",12082.7564141656
+"within",TRUE,"red",12677.6812987013
+"within",TRUE,"yellow",10455.165047157
