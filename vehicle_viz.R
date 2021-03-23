@@ -127,3 +127,23 @@ ggplot(traffic_daily_phase, aes(x=phase, y=daily_avg, colour=phase, group=weeken
                      limits = c(0, 30000), expand = c(0, 0))+
   labs(y = "average total daily traffic", x = "restriction phase") 
 
+##########
+camera_data_pred_obs =read_csv("output/predicted_observed_camera_data.csv")
+camera_data_pred_obs$phase = as.factor(camera_data_pred_obs$phase)
+camera_data_pred_obs$phase = factor(camera_data_pred_obs$phase,
+                                    levels = c('red','yellow','green'))
+head(camera_data_pred_obs)
+ggplot(camera_data_pred_obs, aes(x=datetime_EST, y=vehicle_avg, group=camera_name)) +
+  geom_line(aes(color=camera_name))+
+  geom_point(aes(fill=obs_type), size =0.5, pch = 21, stroke =0.1)+
+  scale_fill_manual(values=c('black','white'))+
+  facet_wrap(~camera_name, ncol = 1, scales="free")+
+  geom_vline(xintercept=as.POSIXct('2020-04-26 20:00:00', tz = "EST"), col = '#a00707', lty = 'dotdash') +
+  geom_vline(xintercept=as.POSIXct('2020-05-08 01:00:00', tz = "EST"), col = '#ecae20', lty = 'dotdash') +
+  geom_vline(xintercept=as.POSIXct('2020-05-29 01:00:00', tz = "EST"), col = '#c3dfa1', lty = 'dotdash') +
+  theme_classic()+
+  scale_color_manual(values = cam_col) +
+  theme(strip.background = element_blank(),
+        strip.text.x =element_blank())+ #format="%B %d %Y"
+  labs(x = "timepoint (hourly)", y = "estimated hourly vehicles")
+
