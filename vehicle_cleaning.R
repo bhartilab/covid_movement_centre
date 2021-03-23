@@ -76,6 +76,7 @@ range(long_traffic$datetime_EST)
 sum(is.na(long_traffic$vehicle_avg))
 long_traffic = long_traffic[!(is.na(long_traffic$vehicle_avg)),]
 
+#add in covariates
 camera_data = read.csv("raw_data/camera_IDs_locations.csv", header = TRUE)
 camera_data$camera_name = gsub(".jpg","",camera_data$ID)
 camera_data_trun = camera_data[,c('camera_name','road_connect','lanes')]
