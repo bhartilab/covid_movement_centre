@@ -7,6 +7,8 @@ library(mgcv)
 library(ggplot2)
 library(tidyr) 
 
+source('phase_functions.R') # function to define phase
+
 ##########
 # import 
 long_traffic = read.csv("output/vehicle_avg_per_hour_cleaned.csv", header = TRUE)
@@ -35,12 +37,14 @@ summary(gam_mod2)
 gam_mod3 <- gam(vehicle_avg ~ camera_name + weekends + s(hour, by = camera_name) + s(date), data = long_traffic) 
 summary(gam_mod3)
 
-
 gam_mod4 <- gam(vehicle_avg_round ~ camera_name + weekends + road_connect*phase + s(hour, by = camera_name, bs = "cc"), data = long_traffic, family = 'poisson') 
 summary(gam_mod4)
 gam.check(gam_mod4)
+plot(gam_mod4, pages=1, cex = 0.5)
 par(mfrow=c(5,4))
-plot(gam_mod4,shade=TRUE,seWithMean=TRUE,scale=0, ylim = c(-8,4), xlim = c(0,24))
+plot(gam_mod4,shade=TRUE,
+     seWithMean=TRUE, scale=0, 
+     ylim = c(-8,4), xlim = c(0,24))
 
 ######## 
 # identify missing hours
@@ -58,6 +62,10 @@ traffic_trun_missing$phase = factor(traffic_trun_missing$phase,
                                     levels=c("red","yellow","green"))
 traffic_trun_missing$weekdays = weekdays(traffic_trun_missing$datetime_EST)
 traffic_trun_missing$weekends = traffic_trun_missing$weekdays %in% c("Sunday", "Saturday")
+
+camera_data = read.csv("raw_data/camera_IDs_locations.csv", header = TRUE)
+camera_data$camera_name = gsub(".jpg","",camera_data$ID)
+camera_data_trun = camera_data[,c('camera_name','road_connect','lanes')]
 traffic_trun_missing = merge(traffic_trun_missing, camera_data_trun)
 traffic_trun_missing
 
@@ -89,23 +97,19 @@ complete_vehicle = merge(complete_vehicle, camera_data_trun, by.x = 'camera_name
 complete_vehicle$date = as.Date(complete_vehicle$datetime_EST, format="%y-%m-%d")
 complete_vehicle$hour = format(complete_vehicle$datetime_EST, format='%H')
 complete_vehicle$hour = as.numeric(complete_vehicle$hour)
-complete_vehicle$phase = cut(complete_vehicle$date,breaks = c(as.Date('2020-03-28'),as.Date('2020-05-08'),# policy red from 4/27 to 5/7
-                                                      as.Date('2020-05-29'),#  yellow 5/8 to 5/28
-                                                      as.Date('2020-07-04')), #  green 5/29 to 6/29
-                         labels=c("red","yellow","green"))
-# complete_vehicle$weekdays = weekdays(complete_vehicle$datetime_EST) # doesn't seem 
-# complete_vehicle$weekends = complete_vehicle$weekdays %in% c("Sunday", "Saturday")
+complete_vehicle$phase = getphase(complete_vehicle$date)
 complete_vehicle$weekdays = weekdays(complete_vehicle$date)
 weekdays = unique(complete_vehicle$weekdays)[order(unique(complete_vehicle$weekdays))]
 weekend_days = weekdays[c(3,4)]
 complete_vehicle$weekends = complete_vehicle$weekdays %in% weekend_days
 head(complete_vehicle)
-write.csv(complete_vehicle,"output/predicted_observed_camera_data_20200810.csv", row.names = FALSE)
+
+write.csv(complete_vehicle,"output/predicted_observed_camera_data.csv", row.names = FALSE)
 
 
 ##############
 # hourly predictions for red vs green
-#dummy dataset for hourly datasets 
+# dummy dataset for hourly datasets 
 dummy_dat <- data.frame(camera_name=rep(camera_data_trun$camera_name,24),
                         hour=rep(seq(0,23,by=1),each = 19)) 
 dummy_dat$phase = 'green'
