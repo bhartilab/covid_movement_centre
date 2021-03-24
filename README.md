@@ -14,19 +14,16 @@ Traffic analyses:
 3. **vehicle_predictions.R**: fitting GAMs to observed data and using to predict missing counts.
 4. **vehicle_viz.R**: vizualizations for vehicle data; plots for main text and SI
 
-Afds
-1. dfjakls
-2. fdjdaslk
-3. asfsd
-4. fdsjk
+SafeGraph analyses:
+1. **[filename]**: identifying and truncating dataset for Centre County
+2. **safegraph_cleaning.R**: adjusting mobile phone counts to match policy 'weeks' (Friday to Thursday) and normalization
+3. **safegraph_analysis.R**: time series analysis of three years data
 
-csd
-1. dfjksla
-2. fjdkals
-3. fdjkl
+Radiance analyses:
+1. **[filename]**: processing of H5D5 files to GeoTiffs with 'confident clear' pixels only
+2. **radiance_analysis.R**: cropping and removing full moon days, daily means, and summaries for each phase and year 
 
-fdjkls
-1. sdjfk
-2. fjdskl
-3. fjdkls
+COVID-19 case analyses:
+1. **covid19_cleaning.R**: truncating data to counties of interest and time period
+2. **covid19_analysis.R**: visualizing epidemic curves for region and analysis for cross-correlation with movement data
 
