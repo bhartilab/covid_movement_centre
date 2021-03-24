@@ -5,3 +5,28 @@ Data are all from open access sources:
 2. SafeGraph mobile phone location data: [insert url]. Downloaded on [insert Date].
 3. Radiance data (VNP46A1): [insert url]. Downloaded on [insert Date]. 
 4. COVID-19 case reports, Pennsylvania Department of Health (https://data.pa.gov/Health/COVID-19-Aggregate-Cases-Current-Daily-County-Heal/j72v-r42c).Aggregated case data used in this analysis downloaded on December 17, 2020
+
+Code in this repository provides details on workflow for processing raw data and analyzing each dataset:
+
+Traffic analyses:
+1. classi
+2. fdka
+3. fdidfds
+4. sfds
+
+Afds
+1. dfjakls
+2. fdjdaslk
+3. asfsd
+4. fdsjk
+
+csd
+1. dfjksla
+2. fjdkals
+3. fdjkl
+
+fdjkls
+1. sdjfk
+2. fjdskl
+3. fjdkls
+
