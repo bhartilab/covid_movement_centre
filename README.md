@@ -1,7 +1,7 @@
 Code for models and figures for manuscript on quantifying movement and its impact on COVID-19 transmission in Centre County, PA, USA
 
 Data are all from open access sources:
-1. Traffic camera still images captured in real-time from PA DOT (e.g. http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02005CCTV9.jpg![image](https://user-images.githubusercontent.com/3798012/112304818-d666a900-8c95-11eb-98a2-f6469bad4a10.png)
+1. Traffic camera still images captured in real-time from PA DOT (e.g. http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02005CCTV9.jpg)
 2. SafeGraph mobile phone location data: [insert url]
     downloaded on [insert Date]. truncated to Points of Interest in census blocks for Centre County
 3. Radiance data (VNP46A1): [insert url]
