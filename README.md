@@ -10,9 +10,9 @@ Data are all from open access sources:
   https://data.pa.gov/Health/COVID-19-Aggregate-Cases-Current-Daily-County-Heal/j72v-r42c
   aggregated case data used in this analysis downloaded on December 17, 2020
   
-Code in this repository provides details on workflow for processing raw data and analyzing time series of different data sets:
+Code in this repository provides details on workflow for processing raw data and analyzing each dataset:
 Traffic analyses:
-	1.**[filename]**: classification of traffic camera stills
+	1. **[filename]**: classification of traffic camera stills
 	2.**vehicle_cleaning.R**: cleaning of hourly count data for traffic cameras - namely removing frozen image counts.
 	3.**vehicle_predictions.R**: fitting GAMs to observed data and using to predict missing counts.
 	4.**vehicle_viz.R**: vizualizations for vehicle data; plots for main text and SI
@@ -26,4 +26,3 @@ Radiance analyses:
 COVID-19 case analyses:
 	1.**covid19_cleaning.R**: truncating data to counties of interest and time period
 	2.**covid19_analysis.R**: visualizing epidemic curves for region and analysis for cross-correlation with movement data
-  
