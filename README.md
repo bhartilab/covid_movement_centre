@@ -9,10 +9,10 @@ Data are all from open access sources:
 Code in this repository provides details on workflow for processing raw data and analyzing each dataset:
 
 Traffic analyses:
-1. classi
-2. fdka
-3. fdidfds
-4. sfds
+1. **[filename]**: classification of traffic camera stills
+2. **vehicle_cleaning.R**: cleaning of hourly count data for traffic cameras - namely removing frozen image counts.
+3. **vehicle_predictions.R**: fitting GAMs to observed data and using to predict missing counts.
+4. **vehicle_viz.R**: vizualizations for vehicle data; plots for main text and SI
 
 Afds
 1. dfjakls
