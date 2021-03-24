@@ -27,4 +27,4 @@ COVID-19 case analyses:
 1. **covid19_cleaning.R**: truncating data to counties of interest and time period
 2. **covid19_analysis.R**: visualizing epidemic curves for region and analysis for cross-correlation with movement data
 
-Phase_functions.R: function to assign phase based on year and academic calendar (see SI of manuscript for justification)
+**Phase_functions.R**: function to assign phase based on year and academic calendar (see SI of manuscript for justification)
