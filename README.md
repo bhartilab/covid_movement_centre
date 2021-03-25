@@ -22,8 +22,7 @@ SafeGraph analyses:
   **safegraph_analysis.R**: time series analysis of three years data
 Radiance analyses:
   **[filename]**: processing of H5D5 files to GeoTiffs
-  **radiance_cleaning.R**: cropping and removing full moon days
-  **radiance_analysis.R**: daily summaries and summaries for each phase and year 
+  **radiance_analysis.R**: cropping and removing full moon days; daily means and summaries for each phase and year 
 COVID-19 case analyses:
   **covid19_cleaning.R**: truncating data to counties of interest and time period
   **covid19_analysis.R**: visualizing epidemic curves for region and analysis for cross-correlation with movement data
