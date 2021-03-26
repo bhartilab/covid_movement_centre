@@ -33,8 +33,6 @@ HOME_PANEL_BACKFILL_ROOT_GLOB = "/Volumes/ELEMENTS/safegraph/weeklyPlacesDec2020
 # Glob String for Home Panel Summary files, On-Going:
 HOME_PANEL_ONGOING_ROOT_GLOB = "/Volumes/ELEMENTS/safegraph/weeklyPlaces20201130toPresent/home_panel_summary/*/*/*/*/home_panel_summary.csv"
 
-
-
 # Eleven-digit census tractcodes that cover Centre County, PA
 centre_tractcodes=[
 "42027010100",
@@ -80,16 +78,12 @@ centre_tractcodes=[
 # * +tractcodes+ - An array of strings, each an 11-digit CBG tract code 
 #
 def selectCentreCountyEntriesFromWeeklyPatterns(globstring,type,tractcodes)
-
   files = Dir.glob(globstring)
-
   files.each{|f|
-
     t = f.split("/")
     ts = t.size
     gzipped_visit_file = File.basename(f)
     unzipped_visit_file = gzipped_visit_file.gsub(/.gz/,'')
-
     centre_cbgfn = ""
     # for BACKFILL:
     if(type=="backfill") then
@@ -102,16 +96,13 @@ def selectCentreCountyEntriesFromWeeklyPatterns(globstring,type,tractcodes)
     centre_cbgfn += "-centre-cbg-#{unzipped_visit_file}"
     centre_cbgfn_final = centre_cbgfn.gsub(/-patterns-part\d.csv.gz/,'')
 
-
     if File.exist?(centre_cbgfn_final) then
       puts("#{centre_cbgfn_final} already exists; skipping")
     else
       system("cp #{f} .")
       puts("unzipping #{gzipped_visit_file}")
       system("gunzip #{gzipped_visit_file}")
-
       centre_cbgs = ""
-
       puts("Opening #{unzipped_visit_file}")
 
       File.open(unzipped_visit_file).each_line{|n|
@@ -140,17 +131,11 @@ end
 # * +type+ - A string, if "backfill" we make an assumption about directory structure 
 # * +tractcodes+ - An array of strings, each an 11-digit CBG tract code 
 def selectCentreCountyEntriesHomePanel(globstring,type,tractcodes)
-
   files = Dir.glob(globstring)
-
   files.each{|f|
-
-    puts(f)
-
     t = f.split("/")
     ts = t.size
     homepanel_file = File.basename(f)
-    puts(homepanel_file)
 
     centre_cbgfn = ""
     # for BACKFILL:
@@ -163,15 +148,11 @@ def selectCentreCountyEntriesHomePanel(globstring,type,tractcodes)
 
     centre_cbgfn.gsub!(/#{homepanel_file}/,"centre-cbg-#{homepanel_file}")
 
-
     if File.exist?(centre_cbgfn) then
       puts("#{centre_cbgfn} already exists; skipping")
     else
-
       centre_cbgs = ""
-
       puts("opening #{f}")
-
       File.open(f).each_line{|n|
         if n =~/,pa,/ then
           tractcodes.each{|z|
@@ -188,7 +169,6 @@ def selectCentreCountyEntriesHomePanel(globstring,type,tractcodes)
 end
 
 
-
 # Extract Centre County POI visits from backfill:
 selectCentreCountyEntriesFromWeeklyPatterns(WEEKLY_PATTERNS_BACKFILL_ROOT_GLOB,"backfill",centre_tractcodes)
 
@@ -203,7 +183,6 @@ files.each{|f|
   dx = f.gsub(/-patterns-part1/,"")
   system("cat #{x} > #{dx}")
 }
-
 
 
 # Extract Centre County POI visits from backfill:
