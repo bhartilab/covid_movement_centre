@@ -15,8 +15,8 @@ Traffic analyses:
 4. **vehicle_viz.R**: vizualizations for vehicle data; plots for main text and SI
 
 SafeGraph analyses:
-1. **extract_weekly_visits_and_devices_residing.rb**: identifying and extracting dataset for Centre County
-1. **create_centre_county_dataframes.py**: converting raw data for Centre County into time series
+1. **safegraph_extract_weekly_visits_and_devices_residing.rb**: identifying and extracting dataset for Centre County
+1. **safegraph_create_centre_county_dataframes.py**: converting raw data for Centre County into time series
 2. **safegraph_cleaning.R**: adjusting mobile phone counts to match policy 'weeks' (Friday to Thursday) and normalization
 3. **safegraph_analysis.R**: time series analysis of three years data
 
