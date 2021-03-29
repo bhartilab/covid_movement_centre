@@ -21,12 +21,12 @@ SafeGraph analyses:
 3. **safegraph_analysis.R**: time series analysis of three years data
 
 Radiance analyses:
-1. **[filename]**: processing of H5D5 files to GeoTiffs with 'confident clear' pixels only
-2. **environment.yml**: Conda environment used for Python code
-3. **viirs.py**: module containing all functions used in `preprocess_vnp46a1.py` and `clip_vnp46a1.py`
-4. **preprocess_vnp46a1.py**: processing of HDF5 files to GeoTiffs with 'confident clear' pixels only
-5. **clip_vnp46a1.py**: clipping of processed GeoTiff files to the area of interest (AOI)
-6. **radiance_analysis.R**: cropping and removing full moon days, daily means, and summaries for each phase and year
+1. **radiance_environment.yml**: Conda environment used for Python code
+2. **radiance_viirs.py**: module containing all functions used in `preprocess_vnp46a1.py` and `clip_vnp46a1.py`
+3. **radiance_preprocess_vnp46a1.py**: processing of HDF5 files to GeoTiffs with 'confident clear' pixels only
+4. **radiance_clip_vnp46a1.py**: clipping of processed GeoTiff files to the area of interest (AOI)
+5. **radiance_cleaning.R**: cropping to population centers and removing full moon days to create rasterStacks
+6. **radiance_analysis.R**: daily means and summaries for each phase and year
 
 COVID-19 case analyses:
 1. **covid19_cleaning.R**: truncating data to counties of interest and time period
