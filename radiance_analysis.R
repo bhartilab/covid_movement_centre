@@ -7,22 +7,65 @@ library(reshape2)
 library(ggplot2)
 library(purrr)
 library(dplyr)
-
+source('phase_functions.R')
 ######################
 # directory locations (some files outside of github due to size)
 out_dir = "/Users/cfaust/Documents/workspace/pageocov_large_files/output"
-shp_dir = '/Users/cfaust/Documents/workspace/pageocov_large_files/shapefiles'
-large_dir = '/Users/cfaust/Documents/workspace/pageocov_large_files'
 
 #####################
 # importing geotiffs 
-raw_maskedst = stack(file.path(out_dir,"stack_vnp46a1_confident_clear_masked.gri"))
 daily_df = read.csv('output/radiance_index_dataframe.csv', header = TRUE)
 
+state_daily_stack = stack(file.path(out_dir,"state_daily_stack_wmoon.grd"))
+bellefonte_daily_stack = stack(file.path(out_dir,"bellefonte_daily_stack_wmoon.grd"))
+bellefonte_df = as.data.frame(rasterToPoints(bellefonte_daily_stack))
+state_df = as.data.frame(rasterToPoints(state_daily_stack))
+head(state_df)
+bellefonte_long = melt(bellefonte_df, id.vars=c("x", "y"),
+                        variable.name="daily_id", value.name="radiance")
+state_long = melt(state_df, id.vars=c("x", "y"),
+                   variable.name="daily_id", value.name="radiance")
+bellefonte_long$area = 'bellefonte'
+state_long$area = 'state college'
 
-state_stack = stack(file.path(out_dir,"state_college_mean_phases_womoon.grd"))
-bellefonte_stack = stack(file.path(out_dir,"bellefonte_mean_phases_womoon.grd"))
+# full dataset
+summary_daily = rbind(state_long, bellefonte_long)
+summary_daily$daily_id
+summary_daily$date = gsub("vnp46a1.", "", summary_daily$daily_id)
+summary_daily$date = as.Date(gsub(".clipped.centre.county", "", summary_daily$date), format = '%Y%m%d')
+summary_daily$year = as.numeric(format(summary_daily$date, format = '%Y'))
+summary_daily$year_fac = as.factor(summary_daily$year)
+summary_daily$phase = getphase(summary_daily$date)
+summary_daily$phase = as.factor(summary_daily$phase)
+# base base1 green local pop red return yellow
+phases_to_omit = c('base1', 'return')
+summary_daily = summary_daily[!(summary_daily$phase %in% phases_to_omit),] #removes 580450 rows
+summary_daily$phase = factor(summary_daily$phase, 
+                          levels =c('base','pop','local',
+                                    'red','yellow','green'))
 
+summary_daily$date_plot = as.Date(strftime(summary_daily$date, format="2020-%m-%d")) 
+
+summary_daily
+summary_daily_mean = summary_daily %>% 
+  group_by(date, date_plot, phase, area, year_fac) %>% 
+  dplyr::summarise(rad_mean = mean(radiance, na.rm = TRUE),
+                   rad_sd = sd(radiance, na.rm = TRUE),
+                   rad_var = var(radiance, na.rm = TRUE),
+                   pixels = sum(!is.na(radiance)))
+
+phase_col = c('black', '#4e4e4e','#b4b4b5', '#a00707','#ecae20','#c3dfa1', '#810f7c')
+summary_daily_mean_v2 = summary_daily_mean[summary_daily_mean$pixels>50,]
+ggplot(summary_daily_mean_v2, aes(x =date_plot, rad_mean, col = phase, group = area))+ 
+  geom_errorbar(aes(ymin=rad_mean-rad_sd, ymax=rad_mean+rad_sd), width=.2,
+                position=position_dodge(.9)) +
+  geom_point()+ # aes(shape = full_moon)
+  theme_minimal()+
+  scale_y_continuous(breaks = seq(-10,120,by=10), expand = c(0,0))+#limits = c(0,110),
+  facet_wrap(year_fac~area, ncol = 2)+ #scales = 'free_y',ncol = 1
+  scale_color_manual(values = phase_col)+
+  labs(y = 'mean radiance (nW/cm2)', x = 'date', 
+       fill = 'restriction \nphase')
 
 ########################
 # quartiles
