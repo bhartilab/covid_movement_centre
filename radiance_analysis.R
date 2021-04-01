@@ -70,16 +70,22 @@ daily_bellefonte = summary_daily_mean[summary_daily_mean$area == 'bellefonte',]
 daily_bellefonte = daily_bellefonte[daily_bellefonte$pixels> (max(daily_bellefonte$pixels)/3),]
 phase_col = c('black', '#4e4e4e','#b4b4b5', '#a00707','#ecae20','#c3dfa1', '#810f7c')
 summary_daily_mean_v2 = summary_daily_mean[summary_daily_mean$pixels>50,]
+
 ggplot(daily_statecollege, aes(x =date_plot, rad_mean, col = phase, group = area))+ 
   geom_errorbar(aes(ymin=rad_mean-rad_sd, ymax=rad_mean+rad_sd), width=.2,
                 position=position_dodge(.9)) +
+  geom_point(col = 'white')+ # aes(shape = full_moon)
   geom_point(aes(shape = full_moon))+ # aes(shape = full_moon)
-  theme_minimal()+
-  scale_y_continuous(breaks = seq(-10,120,by=10), expand = c(0,0))+#limits = c(0,110),
-  facet_wrap(year_fac~area, ncol = 2)+ #scales = 'free_y',ncol = 1
+  scale_shape_manual(values=c(19,1))+
+  theme_bw()+
+  #scale_y_continuous(breaks = seq(-10,120,by=10), expand = c(0,0))+#limits = c(0,110),
+  facet_grid(year_fac~.)+ #scales = 'free_y',ncol = 1
   scale_color_manual(values = phase_col)+
   labs(y = 'mean radiance (nW/cm2)', x = 'date', 
-       fill = 'restriction \nphase')
+       fill = 'restriction \nphase')+
+  scale_x_date(date_minor_breaks = "1 day", breaks = '1 month', 
+               date_labels = '%b %d')
+  
 
 ########################
 # quartiles
