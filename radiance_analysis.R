@@ -54,12 +54,26 @@ summary_daily_mean = summary_daily %>%
                    rad_var = var(radiance, na.rm = TRUE),
                    pixels = sum(!is.na(radiance)))
 
+full_moon = read.csv('raw_data/fullmoon_buffers.csv')
+for (i in 2:ncol(full_moon)){
+  full_moon[,i] =as.Date(full_moon[,i], format = "%m/%d/%y")
+}
+full_moon_5day_even = c(full_moon$full_moon_less2,full_moon$full_moon_less1,
+                        full_moon$full_moon_date,
+                        full_moon$full_moon_more1,full_moon$full_moon_more2) 
+class(summary_daily_mean$date)
+summary_daily_mean$full_moon = summary_daily_mean$date %in% full_moon_5day_even
+
+daily_statecollege =summary_daily_mean[summary_daily_mean$area == 'state college',]
+daily_statecollege = daily_statecollege[daily_statecollege$pixels> (max(daily_statecollege$pixels)/3),]
+daily_bellefonte = summary_daily_mean[summary_daily_mean$area == 'bellefonte',]
+daily_bellefonte = daily_bellefonte[daily_bellefonte$pixels> (max(daily_bellefonte$pixels)/3),]
 phase_col = c('black', '#4e4e4e','#b4b4b5', '#a00707','#ecae20','#c3dfa1', '#810f7c')
 summary_daily_mean_v2 = summary_daily_mean[summary_daily_mean$pixels>50,]
-ggplot(summary_daily_mean_v2, aes(x =date_plot, rad_mean, col = phase, group = area))+ 
+ggplot(daily_statecollege, aes(x =date_plot, rad_mean, col = phase, group = area))+ 
   geom_errorbar(aes(ymin=rad_mean-rad_sd, ymax=rad_mean+rad_sd), width=.2,
                 position=position_dodge(.9)) +
-  geom_point()+ # aes(shape = full_moon)
+  geom_point(aes(shape = full_moon))+ # aes(shape = full_moon)
   theme_minimal()+
   scale_y_continuous(breaks = seq(-10,120,by=10), expand = c(0,0))+#limits = c(0,110),
   facet_wrap(year_fac~area, ncol = 2)+ #scales = 'free_y',ncol = 1
