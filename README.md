@@ -1,10 +1,11 @@
-Code for models and figures for manuscript on quantifying movement and its impact on COVID-19 transmission in Centre County, PA, USA
+Code for models and figures for manuscript entitled: **Passive surveillance assesses compliance with COVID-19 behavioral restrictions in a rural US county**
+
+Authors: Faust, Lambert, Kochenour, Robinson, Bharti
 
 Data are all from open access sources:
 1. Traffic camera still images captured in real-time from PA DOT (e.g. http://www.dot35.state.pa.us/public/Districts/District2/WebCams/CAM02005CCTV9.jpg)
 2. SafeGraph mobile phone location data: [https://catalog.safegraph.io/app/browse]. Downloaded on 03/15/21.
-3. Radiance data (VNP46A1): [insert url]. Downloaded on [insert Date].
-4. COVID-19 case reports, Pennsylvania Department of Health (https://data.pa.gov/Health/COVID-19-Aggregate-Cases-Current-Daily-County-Heal/j72v-r42c).Aggregated case data used in this analysis downloaded on December 17, 2020
+3. COVID-19 case reports, Pennsylvania Department of Health (https://data.pa.gov/Health/COVID-19-Aggregate-Cases-Current-Daily-County-Heal/j72v-r42c).Aggregated case data used in this analysis downloaded on December 17, 2020
 
 Code in this repository provides details on workflow for processing raw data and analyzing each dataset:
 
@@ -19,14 +20,6 @@ SafeGraph analyses:
 1. **safegraph_create_centre_county_dataframes.py**: converting raw data for Centre County into time series
 2. **safegraph_cleaning.R**: adjusting mobile phone counts to match policy 'weeks' (Friday to Thursday) and normalization
 3. **safegraph_analysis.R**: time series analysis of three years data
-
-Radiance analyses:
-1. **radiance_environment.yml**: Conda environment used for Python code
-2. **radiance_viirs.py**: module containing all functions used in `preprocess_vnp46a1.py` and `clip_vnp46a1.py`
-3. **radiance_preprocess_vnp46a1.py**: processing of HDF5 files to GeoTiffs with 'confident clear' pixels only
-4. **radiance_clip_vnp46a1.py**: clipping of processed GeoTiff files to the area of interest (AOI)
-5. **radiance_cleaning.R**: cropping to population centers and removing full moon days to create rasterStacks
-6. **radiance_analysis.R**: daily means and summaries for each phase and year
 
 COVID-19 case analyses:
 1. **covid19_cleaning.R**: truncating data to counties of interest and time period
