@@ -1,4 +1,5 @@
 Code for models and figures for manuscript entitled: **Passive surveillance assesses compliance with COVID-19 behavioral restrictions in a rural US county**
+
 Authors: Faust, Lambert, Kochenour, Robinson, Bharti
 
 Data are all from open access sources:
