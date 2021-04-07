@@ -75,13 +75,12 @@ traffic_daily = as.data.frame(complete_vehicle %>%
                                 summarise(daily_total = sum(vehicle_avg, na.rm = TRUE )))
 
 # Safe Graph
-safe = read.csv('output/truncated_safegraph_for_epi.csv', header = TRUE)
-safe$datetime_EST = as.POSIXct(safe$start_date, tz = "EST")
-safe$date = as.Date(safe$date, format="%Y-%m-%d")
+safe = read.csv('output/safegraph_centre_daily_wide.csv', header = TRUE)
+safe$date_format = as.Date(safe$date_format, format="%Y-%m-%d")
 safe$phase = as.factor(safe$phase)
 safe$phase = factor(safe$phase, 
                     levels = c('base','pop','local','red','yellow', 'green'))
-
+head(safe)
 ########
 phase_col = c('black', '#4e4e4e','#b4b4b5', '#a00707','#ecae20','#c3dfa1', '#810f7c')
 
@@ -100,17 +99,18 @@ traffic = ggplot(traffic_daily, aes(x=date, y=daily_total)) +
 
 traffic  
 head(safe)
-sf_plot =   ggplot(safe, aes(x=date, y=visit_counts_norm_loc)) +
+sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19)) +
   geom_bar(aes(fill = phase), stat = 'identity',  col = 'white', lwd = 0.1) +
-  geom_line(aes(y=rollmean(visit_counts_norm_loc, 2, na.pad=TRUE))) +
-  scale_fill_manual(values = phase_col[4:6])+
+  geom_line(aes(y=rollmean(diff_20_19, 7, na.pad=TRUE))) +
+  scale_fill_manual(values = phase_col)+
   scale_x_date(date_minor_breaks = "7 days", breaks = '2 weeks', 
                limits = as.Date(c("2020-03-01","2020-08-16")),
                date_labels = '%b %e')+
   theme_bw(base_size = 13)+
   theme(axis.text.x = element_blank())+
   labs(y = ' normalised visits ', x = '' )+
-  scale_y_continuous(breaks = seq(0,10,by = 2), limits = c(0,10), expand = c(0, 0)) 
+  scale_y_continuous(breaks = seq(-20000, 15000, by= 5000))
+
 sf_plot
 
 epi = ggplot(epi_centre, aes(x=Date_adj, y=New.Cases)) +
