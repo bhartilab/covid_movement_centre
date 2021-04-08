@@ -6,6 +6,11 @@
 library(ggplot2)
 library(zoo) # rollmean function
 library(dplyr)
+
+library(cowplot)
+library(grid)
+library(gridExtra)
+
 ###############
 # County level patterns for Centre and surrounding counties
 epi_counties = read.csv('output/pa_central_20210301.csv', header = TRUE)
@@ -22,7 +27,7 @@ epi_counties$Jurisdiction = factor(epi_counties$Jurisdiction,
 
 # timeline of interventions for each county (different times for each)
 # timing of interventions from: https://www.governor.pa.gov/process-to-reopen-pennsylvania/
-regs = read.csv('data/interventions_pa_long.csv', header = TRUE)
+regs = read.csv('raw_data/interventions_pa_long.csv', header = TRUE)
 regs$start_date = as.Date(regs$start_date, format = "%m/%d/%y")
 regs$phases = as.factor(regs$phases)
 regs$phases = factor(regs$phases,
@@ -55,14 +60,18 @@ ggplot(epi_counties, aes(x=Date, y=New.Cases)) +
 epi_centre = read.csv('output/pa_centre_20210301.csv', header = TRUE)
 epi_centre$Date = as.Date(epi_centre$Date, format = '%Y-%m-%d')
 epi_centre$Date_adj = as.Date(epi_centre$Date_adj, format = '%Y-%m-%d')
+epi_centre$phase = getphase(epi_centre$Date)
+epi_centre$phase = factor(epi_centre$phase, 
+                           levels = c('base','pop','local','red','yellow', 'green','return'))
+epi_centre[epi_centre$phase =='return','phase'] <- as.factor('green')
 epi_centre$phase2 = as.factor(epi_centre$phase2)
 epi_centre$phase2 = factor(epi_centre$phase2, 
                             levels = c('base','pop','local','red','yellow', 'green','return'))
-epi_centre = epi_centre[order(epi_centre$Date_adj),]
+epi_centre = epi_centre[order(epi_centre$Date),]
 
 
 # traffic data
-complete_vehicle = read.csv("output/predicted_observed_camera_data_20201215.csv", header = TRUE)
+complete_vehicle = read.csv("output/predicted_observed_camera_data.csv", header = TRUE)
 complete_vehicle$date = as.Date(complete_vehicle$date)
 complete_vehicle$datetime_EST = as.POSIXct(complete_vehicle$datetime_EST, tz = "EST")
 complete_vehicle$phase = getphase(complete_vehicle$date)
@@ -89,11 +98,11 @@ traffic = ggplot(traffic_daily, aes(x=date, y=daily_total)) +
   geom_line(aes(y=rollmean(daily_total, 14, na.pad=TRUE))) +
   scale_shape_manual() + 
   scale_fill_manual(values= phase_col[4:7]) +
-  scale_x_date(date_minor_breaks = "1 day", breaks = '14 days', 
-               limits = as.Date(c("2020-03-01","2020-08-16")), 
+  scale_x_date(date_minor_breaks = "7 days", breaks = '14 days', 
+               limits = as.Date(c("2020-02-14","2020-08-16")), 
                date_labels = '%b %e')+
   theme_bw(base_size = 13)+
-  scale_y_continuous(limits = c(0,40000),expand = c(0, 0))+
+  scale_y_continuous(limits = c(0,40000),breaks = seq(0,40000, by= 5000),expand = c(0, 0))+
   theme(axis.text.x = element_blank())+
   labs(x = '', y ='daily car volume') #+
 
@@ -101,10 +110,10 @@ traffic
 head(safe)
 sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19)) +
   geom_bar(aes(fill = phase), stat = 'identity',  col = 'white', lwd = 0.1) +
-  geom_line(aes(y=rollmean(diff_20_19, 7, na.pad=TRUE))) +
+  geom_line(aes(y=rollmean(diff_20_19, 14, na.pad=TRUE))) +
   scale_fill_manual(values = phase_col)+
-  scale_x_date(date_minor_breaks = "7 days", breaks = '2 weeks', 
-               limits = as.Date(c("2020-03-01","2020-08-16")),
+  scale_x_date(date_minor_breaks = "7 days", breaks = '14 days', 
+               limits = as.Date(c("2020-02-14","2020-08-16")), 
                date_labels = '%b %e')+
   theme_bw(base_size = 13)+
   theme(axis.text.x = element_blank())+
@@ -112,17 +121,18 @@ sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19)) +
   scale_y_continuous(breaks = seq(-20000, 15000, by= 5000))
 
 sf_plot
-
-epi = ggplot(epi_centre, aes(x=Date_adj, y=New.Cases)) +
-  geom_bar(aes(fill = phase2), stat = 'identity',  col = 'white', lwd = 0.1) +
+head(epi_centre)
+epi = ggplot(epi_centre, aes(x=Date, y=New.Cases)) +
+  geom_bar(aes(fill = phase), stat = 'identity',  col = 'white', lwd = 0.1) +
   geom_line(aes(y=rollmean(New.Cases, 14, na.pad=TRUE))) +
   scale_fill_manual(values = phase_col) +
-  scale_x_date(date_minor_breaks = "1 day", breaks = '14 days',
-               limits = as.Date(c("2020-02-01","2020-08-16")),
+  scale_x_date(date_minor_breaks = "7 days", breaks = '14 days',
+               limits = as.Date(c("2020-02-14","2020-08-20")),
                date_labels = '%b %e')+
-  scale_y_continuous(limits = c(0,16), breaks = seq(0,16,by = 2))+
+  scale_y_continuous(limits = c(0,16), breaks = seq(0,16,by = 2), expand = c(0, 0))+
   theme_bw(base_size = 13)+
-  labs(y = ' daily confirmed cases', x = '' )
+  labs(y = ' daily confirmed cases', x = '' )+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 epi
 
 grid.newpage()
@@ -134,14 +144,14 @@ grid.draw(rbind(ggplotGrob(sf_plot),
 epi_centre$X7.day.Average.New.Cases
 
 traffic_cases = merge(traffic_daily, epi_centre, by.x = 'date', by.y = 'Date', all.x = TRUE )  
-traffic_safe_cases = merge(traffic_cases, safe, by = 'date')
+traffic_safe_cases = merge(traffic_cases, safe, by = 'date', by.y = 'date_format')
 plot(traffic_safe_cases$daily_total, traffic_safe_cases$New.Cases)
 points(traffic_safe_cases$date, traffic_safe_cases$X7.day.Average.New.Cases, type = 'l', add = TRUE)
 
-ccfvalues = ccf(traffic_cases$daily_total,traffic_cases$X7.day.Average.New.Cases, 21)
+ccfvalues = ccf(traffic_safe_cases$daily_total,traffic_safe_cases$X7.day.Average.New.Cases, 28)
 ccfvalues$lag[ccfvalues$acf == max(ccfvalues$acf)]
 
-ccfvalues = ccf(traffic_safe_cases$visit_counts_norm_loc,traffic_safe_cases$X7.day.Average.New.Cases, 21)
+ccfvalues = ccf(traffic_safe_cases$diff_20_19,traffic_safe_cases$X7.day.Average.New.Cases, 28)
 ccfvalues$acf == max(ccfvalues$acf)
 ccfvalues$lag[ccfvalues$acf == max(ccfvalues$acf)]
 
