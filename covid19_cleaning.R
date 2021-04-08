@@ -4,7 +4,7 @@
 # source functions
 source('radiance_functions.R')
 # read in full dataframe
-pa_data = read.csv('data/COVID-19_Aggregate_Cases_Current_Daily_County_Health.csv', header = TRUE)
+pa_data = read.csv('raw_data/COVID-19_Aggregate_Cases_Current_Daily_County_Health_dwn_20201217.csv', header = TRUE)
 
 pa_data$Date = as.Date(pa_data$Date, format = '%m/%d/%Y')
 pa_data$Date_adj = pa_data$Date - 14
