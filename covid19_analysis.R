@@ -39,6 +39,7 @@ regs$Jurisdiction = factor(regs$Jurisdiction,
                                       'Blair', 'Union', 'Clinton',
                                       'Clearfield','Centre')) 
 
+
 ggplot(epi_counties, aes(x=Date, y=New.Cases)) +
   geom_segment(data = regs, aes(x = start_date, y = -Inf, 
                                 xend = start_date, yend = Inf, col = phases), 
@@ -55,6 +56,15 @@ ggplot(epi_counties, aes(x=Date, y=New.Cases)) +
   scale_color_manual(values = c('darkred','darkgoldenrod','darkgreen'))+
   labs(x = 'date of confirmed test', y = 'new cases')
 
+
+###############
+
+centre_phases = read.csv('raw_data/phase_centre_co.csv', header = TRUE)
+centre_phases$start_date = as.Date(centre_phases$start_date, format = '%m/%d/%y')
+centre_phases$end_date = as.Date(centre_phases$end_date, format = '%m/%d/%y')
+centre_phases$phases = factor(centre_phases$phases,
+                              levels = c('base','pop','local','red','yellow', 'green'))
+head(centre_phases)
 ###############
 # Centre County epidemiological data
 epi_centre = read.csv('output/pa_centre_20210301.csv', header = TRUE)
@@ -93,13 +103,17 @@ head(safe)
 ########
 phase_col = c('black', '#4e4e4e','#b4b4b5', '#a00707','#ecae20','#c3dfa1', '#810f7c')
 
+#traffic = 
+traffic_daily$daily_total
 traffic = ggplot(traffic_daily, aes(x=date, y=daily_total)) +
-  geom_bar(aes(fill = phase), stat = 'identity',  col = 'white', lwd = 0.1) +
-  geom_line(aes(y=rollmean(daily_total, 14, na.pad=TRUE))) +
-  scale_shape_manual() + 
-  scale_fill_manual(values= phase_col[4:7]) +
+  geom_rect(data=centre_phases, aes(NULL,NULL,xmin=start_date-.5,xmax=end_date+.5,fill=phases),
+            ymin=0,ymax=40000, colour="white", size=0.5, alpha=0.5) +
+  geom_bar(stat = 'identity',  col = 'white', lwd = 0) +
+  geom_line(aes(y=rollmean(daily_total, 7, na.pad=TRUE))) +
+  scale_shape_manual() +
+  scale_fill_manual(values= phase_col) +
   scale_x_date(date_minor_breaks = "7 days", breaks = '14 days', 
-               limits = as.Date(c("2020-02-14","2020-08-16")), 
+               limits = as.Date(c("2020-02-13","2020-08-28")), 
                date_labels = '%b %e')+
   theme_bw(base_size = 13)+
   scale_y_continuous(limits = c(0,40000),breaks = seq(0,40000, by= 5000),expand = c(0, 0))+
@@ -109,11 +123,13 @@ traffic = ggplot(traffic_daily, aes(x=date, y=daily_total)) +
 traffic  
 head(safe)
 sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19)) +
-  geom_bar(aes(fill = phase), stat = 'identity',  col = 'white', lwd = 0.1) +
-  geom_line(aes(y=rollmean(diff_20_19, 14, na.pad=TRUE))) +
+  geom_rect(data=centre_phases, aes(NULL,NULL,xmin=start_date-.5,xmax=end_date+.5,fill=phases),
+            ymin=-20000,ymax=15000, colour="white", size=0.5, alpha=0.5) +
+  geom_bar( stat = 'identity',  col = 'white', lwd = 0) +
+  geom_line(aes(y=rollmean(diff_20_19, 7, na.pad=TRUE))) +
   scale_fill_manual(values = phase_col)+
   scale_x_date(date_minor_breaks = "7 days", breaks = '14 days', 
-               limits = as.Date(c("2020-02-14","2020-08-16")), 
+               limits = as.Date(c("2020-02-13","2020-08-28")), 
                date_labels = '%b %e')+
   theme_bw(base_size = 13)+
   theme(axis.text.x = element_blank())+
@@ -123,11 +139,13 @@ sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19)) +
 sf_plot
 head(epi_centre)
 epi = ggplot(epi_centre, aes(x=Date, y=New.Cases)) +
-  geom_bar(aes(fill = phase), stat = 'identity',  col = 'white', lwd = 0.1) +
-  geom_line(aes(y=rollmean(New.Cases, 14, na.pad=TRUE))) +
+  geom_rect(data=centre_phases, aes(NULL,NULL,xmin=start_date-.5,xmax=end_date+.5,fill=phases),
+            ymin=0,ymax=16, colour="white", size=0.5, alpha=0.5) +
+  geom_bar(stat = 'identity',  fill = 'black', lwd = 0) +
+  geom_line(aes(y=rollmean(New.Cases, 7, na.pad=TRUE)), color = 'white') +
   scale_fill_manual(values = phase_col) +
   scale_x_date(date_minor_breaks = "7 days", breaks = '14 days',
-               limits = as.Date(c("2020-02-14","2020-08-20")),
+               limits = as.Date(c("2020-02-13","2020-08-28")),
                date_labels = '%b %e')+
   scale_y_continuous(limits = c(0,16), breaks = seq(0,16,by = 2), expand = c(0, 0))+
   theme_bw(base_size = 13)+
