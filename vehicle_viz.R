@@ -85,7 +85,8 @@ traffic_daily_by_road= as.data.frame(complete_vehicle %>%
                                        dplyr::summarise(daily_total = sum(vehicle_avg, na.rm = TRUE )))
 traffic_mean_daily_by_road= as.data.frame(traffic_daily_by_road %>%
                                             dplyr::group_by(road_connect, weekends, phase) %>%
-                                            dplyr::summarise(daily_mean = mean(daily_total, na.rm = TRUE )))
+                                            dplyr::summarise(daily_mean = mean(daily_total, na.rm = TRUE ),
+                                                             days = length(daily_total)))
 write.csv(traffic_mean_daily_by_road,"output/table_mean_road_traffic_estimated_with_gam.csv", row.names = FALSE)
 
 traffic_daily= as.data.frame(complete_vehicle %>%
