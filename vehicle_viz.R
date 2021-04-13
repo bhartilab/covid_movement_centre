@@ -8,6 +8,7 @@ library(tidyr) # long >wide
 library(dplyr)
 library(RColorBrewer)
 library(ggplot2)
+library(rgdal)
 
 ####
 # import data
@@ -37,10 +38,15 @@ camera_loc_xy = camera_loc[,c('Longitude','Latitude')] #converting into a spatia
 camera_loc_spdf = SpatialPointsDataFrame(coords = camera_loc_xy, data = camera_loc,
                                     proj4string = CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
 plot(camera_loc_spdf)
-plot(centre_co,  xlim = c(-78.00, -77.74), ylim = c(40.76,41.07))
 plot(major_roads_wgs, add = T, col = 'grey80')
 plot(camera_loc_spdf, add = TRUE, col = cam_col, pch = 17, cex =2)
 extent(camera_loc_spdf)
+camera_loc_df = as.data.frame(camera_loc_spdf)
+library(stringr)
+camera_loc_df$id_trun = str_sub(camera_loc_df$ID, -6, -5)
+ggplot(aes(x = Longitude, y = Latitude), data = camera_loc_df) + 
+  geom_text(aes(label = id_trun),vjust=-0.39) + 
+  geom_point()
 
 plot(centre_co)
 
@@ -60,10 +66,7 @@ ggplot(hourly_predicted, aes(x = hour, y = fit, col = camera_name)) +
   geom_rect(data=rush_hours, aes(NULL,NULL,xmin=x1,xmax=x2),
             ymin=0,ymax=425, colour="white", size=0.5, alpha=0.2) +
   geom_line(aes(color=camera_name)) +
-  #geom_point(size = 1)+
-  #scale_shape_manual(values=c(1, 17))+
   scale_color_manual(values = cam_col) +
-  #geom_line(aes(hour, fit))+
   labs(y = 'predicted weekday traffic', x = 'hour of day')+
   theme_classic()+
   facet_wrap(~phase)+
