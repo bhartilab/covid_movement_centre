@@ -43,7 +43,7 @@ regs$Jurisdiction = factor(regs$Jurisdiction,
 ggplot(epi_counties, aes(x=Date, y=New.Cases)) +
   geom_segment(data = regs, aes(x = start_date, y = -Inf, 
                                 xend = start_date, yend = Inf, col = phases), 
-               alpha = 0.5, lwd = 1.2)+
+               lwd = 1.2)+
   geom_area()+
   facet_wrap(~Jurisdiction, ncol = 1)+ 
   scale_x_date(expand=c(0,0),
@@ -53,9 +53,13 @@ ggplot(epi_counties, aes(x=Date, y=New.Cases)) +
   theme_classic()+
   theme(strip.background = element_blank(),
         strip.text.x = element_blank())+
-  scale_color_manual(values = c('darkred','darkgoldenrod','darkgreen'))+
+  scale_color_manual(values = c('#a00707','#ecae20','#c3dfa1'))+
   labs(x = 'date of confirmed test', y = 'new cases')
 
+ggsave("plots/center_epi_curves.eps", 
+       device = 'eps', 
+       width = 25, height = 10, 
+       units = "cm")
 
 ###############
 
@@ -108,67 +112,87 @@ date_lim = as.Date(c("2020-02-13","2020-08-28"))
 breaks_date = seq(as.Date("2020-02-14"), as.Date("2020-08-27"), by="7 days")
 
 traffic_daily$daily_total
-traffic = ggplot(traffic_daily, aes(x=date, y=daily_total)) +
+traffic = ggplot(traffic_daily, aes(x=date, y=daily_total/1000)) +
   geom_rect(data=centre_phases, aes(NULL,NULL,xmin=start_date-.5,xmax=end_date+.5,fill=phases),
-            ymin=0,ymax=40000, colour="white", size=0, alpha=0.5) +
-  geom_bar(stat = 'identity',  fill = 'white', lwd = 0) +
-  geom_line(aes(y=rollmean(daily_total, 7, na.pad=TRUE))) +
+            ymin=17.500,ymax=35.000, 
+            colour="white", size=0, alpha = 0.5) +
+  #geom_bar(stat = 'identity',  fill = 'white', lwd = 0) +
+  geom_line(aes(y=rollmean(daily_total/1000, 7, na.pad=TRUE)),
+            col = 'black') +
   scale_shape_manual() +
   scale_fill_manual(values= phase_col) +
   scale_x_date(date_minor_breaks = "1 day", 
                breaks = breaks_date,
-               limits = date_lim)+
-  theme_bw(base_size = 13)+
-  scale_y_continuous(limits = c(0,40000),breaks = seq(0,40000, by= 5000),expand = c(0, 0))+
+               limits = date_lim,
+               expand = c(0, 0))+
+  theme_classic(base_size = 9)+
+  scale_y_continuous(limits = c(17.500,30.000),
+                     breaks = seq(17.500,30.000, by= 2.500),expand = c(0, 0))+
   theme(axis.text.x = element_blank())+
-  labs(x = '', y ='daily car volume') #+
-
+  labs(x = '', y ='daily car volume\n(thousands)') +
+  theme(legend.position = 'none')
 traffic  
-head(safe)
-sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19)) +
+
+sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19/1000)) +
   geom_rect(data=centre_phases, aes(NULL,NULL,xmin=start_date-.5,xmax=end_date+.5,fill=phases),
-            ymin=-20000,ymax=15000, colour="white", 
-            size=0, alpha=0.5) +
-  geom_bar( stat = 'identity',  fill = 'white', lwd = 0) +
-  geom_line(aes(y=rollmean(diff_20_19, 7, na.pad=TRUE))) +
+            ymin=-20,ymax=15, colour="white", size=0, alpha = 0.5) +
+  #geom_bar( stat = 'identity',  fill = 'white', lwd = 0) +
+  geom_line(aes(y=rollmean(diff_20_19/1000, 7, na.pad=TRUE)), col = 'black') +
   scale_fill_manual(values = phase_col)+
   scale_x_date(date_minor_breaks = "1 day", 
                breaks = breaks_date,
-               limits = date_lim)+
-  theme_bw(base_size = 13)+
+               limits = date_lim,
+               expand = c(0, 0))+
+  theme_classic(base_size = 9)+
   theme(axis.text.x = element_blank())+
-  labs(y = ' normalised visits ', x = '' )+
-  scale_y_continuous(breaks = seq(-20000, 15000, by= 5000))
-
+  labs(y = ' mobile phone visit\ndifference from 2019\n(thousands) ', x = '' )+
+  scale_y_continuous(breaks = seq(-20, 15, by= 5))+
+  theme(legend.position = 'none')
 sf_plot
+ggsave("plots/safe_graph.eps", 
+       device = 'eps', 
+       width = 20, height = 7, 
+       units = "cm")
+
+
 epi = ggplot(epi_centre, aes(x=Date, y=New.Cases)) +
   geom_rect(data=centre_phases, aes(NULL,NULL,xmin=start_date-0.5,xmax=end_date+0.5,fill=phases),
-            ymin=0,ymax=16, colour="white", size=0, alpha=0.5) +
-  geom_bar(stat = 'identity',  fill = 'white', lwd = 0) +
-  geom_line(aes(y=rollmean(New.Cases, 7, na.pad=TRUE))) +
+            ymin=0,ymax=16, colour="white", size=0, alpha = 0.5) +
+  #geom_bar(stat = 'identity',  fill = 'white', lwd = 0) +
+  geom_line(aes(y=rollmean(New.Cases, 7, na.pad=TRUE)), col = 'black') +
   scale_fill_manual(values = phase_col) +
   scale_x_date(date_minor_breaks = "1 day", 
                breaks = breaks_date,
                limits = date_lim,
-               date_labels = '%b %e')+
-  scale_y_continuous(limits = c(0,16), breaks = seq(0,16,by = 2), expand = c(0, 0))+
-  theme_bw(base_size = 13)+
+               date_labels = '%b %e',
+               expand = c(0, 0))+
+  scale_y_continuous(limits = c(0,8), breaks = seq(0,8,by = 1), expand = c(0, 0))+
+  theme_classic(base_size = 9)+
   labs(y = ' daily confirmed cases', x = '' )+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(legend.position = 'none')
 epi
 
 grid.newpage()
-
-grid.draw(rbind(ggplotGrob(sf_plot), 
-                ggplotGrob(traffic), 
+p4 = grid.draw(rbind(ggplotGrob(traffic), 
+                ggplotGrob(sf_plot), 
                 ggplotGrob(epi),
                 size = "last"))
 
+plot_grid(traffic, sf_plot, epi, 
+          ncol=1, labels=LETTERS[1:3])
 
-grid.arrange(sf_plot,
-             traffic,
-             epi, ncol = 1)
+save_plot("plots/three_panel_timeseries.tiff", 
+          p4, 
+          ncol = 1, base_asp = 1.1)
 
+ggsave("plots/three_panel_timeseries.tiff", 
+       device = 'tiff', 
+       plot = p,
+       width = 10, height = 7, 
+       units = "cm",
+       dpi = 1200,
+       bg = "transparent")
 ###############
 epi_centre$X7.day.Average.New.Cases
 
