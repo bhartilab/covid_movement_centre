@@ -114,7 +114,7 @@ breaks_date = seq(as.Date("2020-02-14"), as.Date("2020-08-27"), by="7 days")
 traffic_daily$daily_total
 traffic = ggplot(traffic_daily, aes(x=date, y=daily_total/1000)) +
   geom_rect(data=centre_phases, aes(NULL,NULL,xmin=start_date-.5,xmax=end_date+.5,fill=phases),
-            ymin=17.500,ymax=35.000, 
+            ymin=0,ymax=35.000, 
             colour="white", size=0, alpha = 0.5) +
   #geom_bar(stat = 'identity',  fill = 'white', lwd = 0) +
   geom_line(aes(y=rollmean(daily_total/1000, 7, na.pad=TRUE)),
@@ -126,12 +126,20 @@ traffic = ggplot(traffic_daily, aes(x=date, y=daily_total/1000)) +
                limits = date_lim,
                expand = c(0, 0))+
   theme_classic(base_size = 9)+
-  scale_y_continuous(limits = c(17.500,30.000),
-                     breaks = seq(17.500,30.000, by= 2.500),expand = c(0, 0))+
+  scale_y_continuous(limits = c(0,30),
+                     breaks = seq(0,30, by= 5),expand = c(0, 0))+
   theme(axis.text.x = element_blank())+
   labs(x = '', y ='daily car volume\n(thousands)') +
   theme(legend.position = 'none')
-traffic  
+traffic 
+ggsave("plots/traffic_figure.pdf", 
+       width = 6, height = 1.8, 
+       units = "in",
+       device='pdf')
+ggsave("plots/traffic_figure.eps", 
+       width = 6, height = 1.8, 
+       units = "in",
+       device='eps')
 
 sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19/1000)) +
   geom_rect(data=centre_phases, aes(NULL,NULL,xmin=start_date-.5,xmax=end_date+.5,fill=phases),
@@ -139,6 +147,7 @@ sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19/1000)) +
   #geom_bar( stat = 'identity',  fill = 'white', lwd = 0) +
   geom_line(aes(y=rollmean(diff_20_19/1000, 7, na.pad=TRUE)), col = 'black') +
   scale_fill_manual(values = phase_col)+
+  geom_hline(yintercept=464/1000, col = 'black',  lwd = 0.3)+
   scale_x_date(date_minor_breaks = "1 day", 
                breaks = breaks_date,
                limits = date_lim,
@@ -149,10 +158,14 @@ sf_plot =   ggplot(safe, aes(x=date_format, y=diff_20_19/1000)) +
   scale_y_continuous(breaks = seq(-20, 15, by= 5))+
   theme(legend.position = 'none')
 sf_plot
-ggsave("plots/safe_graph.eps", 
-       device = 'eps', 
-       width = 20, height = 7, 
-       units = "cm")
+ggsave("plots/safegraph_figure.pdf", 
+       width = 6, height = 1.8, 
+       units = "in",
+       device='pdf')
+ggsave("plots/safegraph_figure.eps", 
+       width = 6, height = 1.8, 
+       units = "in",
+       device='eps')
 
 
 epi = ggplot(epi_centre, aes(x=Date, y=New.Cases)) +
@@ -172,6 +185,17 @@ epi = ggplot(epi_centre, aes(x=Date, y=New.Cases)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   theme(legend.position = 'none')
 epi
+ggsave("plots/epi.tiff", 
+       device = 'tiff', 
+       plot = epi,
+       width = 10, height = 7, 
+       units = "cm",
+       dpi = 1200,
+       bg = "transparent")
+ggsave("plots/epi_figure.pdf", 
+       width = 6, height = 1.8, 
+       units = "in",
+       device='pdf')
 
 grid.newpage()
 p4 = grid.draw(rbind(ggplotGrob(traffic), 
