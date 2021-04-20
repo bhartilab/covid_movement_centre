@@ -1,10 +1,7 @@
 getphase <- function(dates) { # function for assigning dates to phase
-  # dates = as.Date("2020-03-05")
-  #dates =  as.Date(indexing$date)
   years = 2018:2020
   y = strftime(dates, format="%Y")
   i = match(y, years)
-  
   snow = c(as.Date("2020-02-09",  format = "%Y-%m-%d"),
            as.Date("2020-02-08",  format = "%Y-%m-%d"),
            as.Date("2020-02-14",  format = "%Y-%m-%d")) #2020
@@ -39,8 +36,7 @@ getphase <- function(dates) { # function for assigning dates to phase
 }
 
 
-getphase3 <- function(dates) { # function for assigning dates to phase
-  #equal spring breaks
+getphase3 <- function(dates) {#equal spring breaks
   years = 2018:2020
   y = strftime(dates, format="%Y")
   i = match(y, years)
