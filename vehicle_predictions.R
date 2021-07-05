@@ -47,7 +47,7 @@ plot(gam_mod4, pages=1, cex = 0.5)
 par(mfrow=c(5,4))
 plot(gam_mod4,shade=TRUE,
      seWithMean=TRUE, scale=0, 
-     ylim = c(-8,4), xlim = c(0,24))
+     ylim = c(-8,4), xlim = c(0,24), pages = 1)
 formula.gam(gam_mod4)
 coef(gam_mod4)
 
