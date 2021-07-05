@@ -34,10 +34,10 @@ plot(gam_mod1, residuals = TRUE, pch = 1, pages=1)
 gam_mod1a <- gam(vehicle_avg_round ~ camera_name + s(hour, bs = "cc"), data = long_traffic, family = 'poisson') 
 summary(gam_mod1a)
 
-gam_mod2 <- gam(vehicle_avg ~ camera_name + weekends + s(hour, bs = "cc", by = camera_name), data = long_traffic) 
+gam_mod2 <- gam(vehicle_avg_round ~ camera_name + weekends + s(hour, bs = "cc", by = camera_name), data = long_traffic) 
 summary(gam_mod2)
 
-gam_mod3 <- gam(vehicle_avg ~ camera_name + weekends + s(hour, by = camera_name) + s(date), data = long_traffic) 
+gam_mod3 <- gam(vehicle_avg_round ~ camera_name + weekends + s(hour, by = camera_name) + s(date), data = long_traffic) 
 summary(gam_mod3)
 
 gam_mod4 <- gam(vehicle_avg_round ~ camera_name + weekends + road_connect*phase + s(hour, by = camera_name, bs = "cc"), data = long_traffic, family = 'poisson') 
@@ -48,6 +48,8 @@ par(mfrow=c(5,4))
 plot(gam_mod4,shade=TRUE,
      seWithMean=TRUE, scale=0, 
      ylim = c(-8,4), xlim = c(0,24))
+formula.gam(gam_mod4)
+coef(gam_mod4)
 
 ######## 
 # identify missing hours
