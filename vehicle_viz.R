@@ -25,7 +25,7 @@ complete_vehicle$date = as.Date(complete_vehicle$date)
 pa_crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
 major_roads <- readOGR('/Users/cfaust/Documents/workspace/pageocov_large_files/shapefiles/Major_Roads-shp',
                        'Major_Roads')
-counties <- readOGR(dsn="/Users/cfaust/Box/pa_covid/shapefiles/Pennsylvania County Boundaries",
+counties <- readOGR(dsn="/Users/cfaust/Documents/workspace/pageocov_large_files/shapefiles/Pennsylvania County Boundaries",
                     layer = 'geo_export_6e3956ed-1c8f-4533-acac-de9d05463420')
 counties_wgs =  spTransform(counties,pa_crs)
 centre_co = counties_wgs[counties_wgs@data$county_nam == 'CENTRE',]
@@ -150,4 +150,21 @@ ggplot(camera_data_pred_obs, aes(x=datetime_EST, y=vehicle_avg, group=camera_nam
   theme(strip.background = element_blank(),
         strip.text.x =element_blank())+ #format="%B %d %Y"
   labs(x = "timepoint (hourly)", y = "estimated hourly vehicles")
+
+
+##############
+# Traffic cameras v SafeGraph
+safegraph_loc = read.csv("raw_data/POI_centre_locations.csv", header = TRUE)
+head(safegraph_loc)
+safegraph_loc_xy = safegraph_loc[,c('longitude','latitude')] 
+safegraph_loc_spdf = SpatialPointsDataFrame(coords = safegraph_loc_xy, data = safegraph_loc,
+                                         proj4string = CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
+
+
+library(scales)
+plot(centre_co)
+plot(major_roads_wgs, add = T, col = 'grey80')
+plot(safegraph_loc_spdf, add = TRUE, col = alpha('#F2AD00', 0.5), pch = 1, cex =0.5)
+plot(camera_loc_spdf, add = TRUE, col = '#00A08A', pch = 17, cex =0.7)
+plot(centre_co, add = T)
 
