@@ -19,6 +19,9 @@ long_traffic$phase = factor(long_traffic$phase, levels = c('red', 'yellow','gree
 long_traffic$camera_name = as.factor(long_traffic$camera_name)
 
 long_traffic$vehicle_avg_round = round(long_traffic$vehicle_avg)
+
+max(long_traffic$date) - min(long_traffic$date)
+
 ################
 # GAMS
 
@@ -51,8 +54,11 @@ plot(gam_mod4,shade=TRUE,
 long_traffic_trun = long_traffic[, c('datetime_EST', 'camera_name', 'vehicle_avg')]
 wide_traffic_trun = spread(long_traffic_trun, camera_name, vehicle_avg)
 traffic_trun_missing = gather(wide_traffic_trun, camera_name, vehicle_avg, CAM02001CCTV2:parkArboretum, factor_key=TRUE)
+dim(traffic_trun_missing)
 traffic_trun_missing = traffic_trun_missing[is.na(traffic_trun_missing$vehicle_avg),]
-
+dim(traffic_trun_missing)
+(2959/49685)*100
+length(unique(traffic_trun_missing$camera_name))
 traffic_trun_missing$datetime_EST = as.POSIXct(traffic_trun_missing$datetime_EST, tz = "EST")
 traffic_trun_missing$date = as.Date(traffic_trun_missing$datetime_EST, format="%y-%m-%d")
 traffic_trun_missing$hour = format(traffic_trun_missing$datetime_EST, format='%H')
