@@ -152,32 +152,3 @@ ggplot(camera_data_pred_obs, aes(x=datetime_EST, y=vehicle_avg, group=camera_nam
   labs(x = "timepoint (hourly)", y = "estimated hourly vehicles")
 
 
-##############
-# Traffic cameras v SafeGraph
-safegraph_loc = read.csv("raw_data/POI_centre_locations.csv", header = TRUE)
-head(safegraph_loc)
-safegraph_loc_xy = safegraph_loc[,c('longitude','latitude')] 
-safegraph_loc_spdf = SpatialPointsDataFrame(coords = safegraph_loc_xy, data = safegraph_loc,
-                                         proj4string = CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
-
-
-library(scales)
-
-library(wesanderson)
-library(MASS)
-f1 <- kde2d(safegraph_loc_spdf$longitude, safegraph_loc_spdf$latitude,
-            n = 500,lims = c(-78.37698, -77.14346,40.69156,41.25345))
-??wes.palette
-cols = wes_palette('Rushmore1', 6, type =  "continuous")
-cols[1] <-'white'
-
-plot(centre_co)
-image_adj = raster::mask(f1,centre_co )
-#plot(safegraph_loc_spdf, add = TRUE, col = alpha('black', 0.5), pch = 1, cex =0.5)
-image(f1, add = T, breaks = c(0, 0.01,1,2, 5,50,160),
-      col = cols)
-plot(major_roads_wgs, add = T, col = 'grey70')
-plot(camera_loc_spdf, add = TRUE, col = 'white', pch = 17, cex =1.2)
-plot(centre_co, add = T)
-
-plot(centre_co, add = T)
