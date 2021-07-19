@@ -41,6 +41,12 @@ centre_sum = centre_daily %>%
   group_by(phase, year, weekday) %>%
   summarise(days = length(visit_counts))
 
+centre_daily$weekend = centre_daily$weekday %in% c('Saturday','Sunday')
+centre_sum2 = centre_daily %>%
+  group_by(phase, year, weekend) %>%
+  summarise(days = length(visit_counts),
+            mean_visit = mean(visit_counts))
+
 ggplot(centre_sum,aes(days))+
   geom_histogram(aes(fill = weekday))+
   facet_grid(year~phase)
